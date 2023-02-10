@@ -44,7 +44,7 @@ app.layout = html.Div([
     dbc.Row([
         dbc.Col([
             html.Div([
-                dcc.Graph(id='sunspot', style={'margin': '10px'}),
+                dcc.Graph(id='sunspot', style={'width': '48vw', 'height': '60vh', 'margin': '10px'}),
                 dbc.Row([
                         html.P('set year range:', style={'text-indent': '18px', 'font-style': 'italic',
                                                          'float': 'left'}),
@@ -71,7 +71,8 @@ app.layout = html.Div([
                   'background-color': 'rgba(90, 90, 90, 1)', 'border': '3px solid grey'}),
         dbc.Col([
             html.Div([
-                    dcc.Graph(id='cycles', style={'margin-top': '10px', 'margin-left': '20px', 'margin-left': '20px'}),
+                    dcc.Graph(id='cycles', style={'width': '45vw', 'height': '40vh', 'margin-top': '10px',
+                                                  'margin-left': '20px', 'margin-left': '20px'}),
                     dbc.Row([
                         html.P('set cycle length (years):', style={'text-indent': '18px', 'font-style': 'italic',
                                                            'float': 'left'}),
@@ -161,13 +162,11 @@ def smooth_plot(window, yr_range):
                              line_width=1, name='Monthly'))
     fig.add_trace(go.Scatter(x=smooth['date'], y=smooth['avg'], mode='lines', line_color='orange', name='Smoothed'))
 
-    fig.update_layout(width=700, height=500,
-                      title=f'International Sunspot Number: Monthly Mean and {window}-Month Smoothed Number',
+    fig.update_layout(title=f'International Sunspot Number: Monthly Mean and {window}-Month Smoothed Number',
                       title_font_size=15,
                       xaxis_title=f'Time (Years {yr_range[0]}-{yr_range[1]})', yaxis_title='Sunspot Number',
                       paper_bgcolor='rgba(100, 100, 100, 0.8)', title_font_color='white', xaxis_color='white',
-                      yaxis_color='white', legend_font_color='white', legend={'bgcolor': 'rgba(0, 0, 0, 0)'},
-                      margin=dict(l=80, r=80, t=100, b=80))
+                      yaxis_color='white', legend_font_color='white', legend={'bgcolor': 'rgba(0, 0, 0, 0)'})
 
     return fig
 
@@ -192,10 +191,10 @@ def cycle(mod):
     fig = px.scatter(cycles, x='cycle_pos', y='sunspot_avg')
     fig.update_traces(marker={'size': 3, 'color': 'steelblue'})
 
-    fig.update_layout(width=650, height=300, title=f'Sunspot Cycle: {mod}', xaxis_title='Years',
+    fig.update_layout(title=f'Sunspot Cycle: {mod}', xaxis_title='Years',
                       yaxis_title='# of Sunspots', paper_bgcolor='rgba(100, 100, 100, 0.8)', title_font_color='white',
                       xaxis_color='white', yaxis_color='white', legend_font_color='white',
-                      legend={'bgcolor': 'rgba(0, 0, 0, 0)'}, margin=dict(l=80, r=80, t=100, b=80))
+                      legend={'bgcolor': 'rgba(0, 0, 0, 0)'}, margin=dict(l=100, r=60, t=110, b=80))
 
     return fig
 
