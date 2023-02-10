@@ -74,7 +74,7 @@ app.layout = html.Div([
     # site header
     dbc.Row([
         html.H2('ANALYSIS OF SUNSPOT NUMBERS', style={'margin': '0', 'color': 'white'}),
-        html.P('data from: https://soho.nascom.nasa.gov/data/realtime-images.html, '
+        html.P('data from: https://soho.nascom.nasa.gov/data/realtime-images.html (https://goo.gl/PXrLYd), '
                'https://www.sidc.be/silso/datafiles', style={'color': 'darkgrey', 'float': 'left', 'margin': '0'}),
         html.A('Learn More', href='https://en.wikipedia.org/wiki/Sunspot', target='_blank',
                style={'float': 'right', 'color': 'lightblue', 'margin-right': '10px'})
@@ -334,7 +334,7 @@ def update_eit(clicks):
     if clicks is None or clicks % 4 == 0:
         src = 'https://soho.nascom.nasa.gov/data/LATEST/current_eit_171.gif'
         txt = 'EIT 171'
-    
+
     elif clicks % 4 == 1:
         src = 'https://soho.nascom.nasa.gov/data/LATEST/current_eit_195.gif'
         txt = 'EIT 195'
