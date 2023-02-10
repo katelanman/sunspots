@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-sunspots = pd.read_csv("SN_m_tot_V2.0.csv", sep=';', header=None)[[0, 2, 3]]
+sunspots = pd.read_csv("monthly_sunspots.csv", sep=';', header=None)[[0, 2, 3]]
 sunspots.columns = ['year', 'date', 'sunspot_avg']
 
 
@@ -37,20 +37,32 @@ app.layout = html.Div([
         html.H2('ANALYSIS OF SUNSPOT NUMBERS', style={'margin': '0', 'color': 'white'}),
         html.P('data from: https://soho.nascom.nasa.gov/data/realtime-images.html, '
                'https://www.sidc.be/silso/datafiles', style={'color': 'darkgrey', 'float': 'left', 'margin': '0'}),
-        html.A('Learn More', href='https://www.sidc.be/silso/home', target='_blank', style={'float': 'right',
-                                                                                            'color': 'lightblue',
-                                                                                            'margin-right': '10px'})
+        html.A('Learn More', href='https://en.wikipedia.org/wiki/Sunspot', target='_blank',
+               style={'float': 'right', 'color': 'lightblue', 'margin-right': '10px'})
     ], style={'height': '6vh', 'background-color': 'rgba(0,0,0,0.8)', 'border': '5px solid black'}),
     dbc.Row([
         dbc.Col([
             html.Div([
                 dcc.Graph(id='sunspot', style={'margin': '10px'}),
-                html.P('set year range:', style={'text-indent': '18px', 'font-style': 'italic'}),
+                dbc.Row([
+                        html.P('set year range:', style={'text-indent': '18px', 'font-style': 'italic',
+                                                         'float': 'left'}),
+                        dcc.Input(id='yr_min', value=1900, type='number', min=1749, max=2022,
+                                  style={'float': 'left', 'margin': '15px', 'width': '50px'}),
+                        html.P('–', style={'float': 'left'}),
+                        dcc.Input(id='yr_max', value=2023, type='number', min=1750, max=2023,
+                                  style={'float': 'left', 'margin': '15px', 'width': '50px'})
+                        ], style={'width': '600px', 'height': '60px'}),
                 dcc.RangeSlider(id='yr_range', min=1749, max=2023, step=1,
                                 value=[1900, 2023],
                                 marks={i: {'label': str(i),
                                            'style': {'color': 'white'}} for i in range(1749, 2023, 13)}),
-                html.P('set moving average window:', style={'text-indent': '18px', 'font-style': 'italic'}),
+                dbc.Row([
+                        html.P('set moving average window (years):',
+                               style={'text-indent': '18px', 'font-style': 'italic', 'float': 'left'}),
+                        dcc.Input(id='window_input', value=10, type='number', min=1, max=100,
+                                  style={'float': 'left', 'margin': '15px', 'width': '40px'})
+                        ], style={'width': '600px', 'height': '60px'}),
                 dcc.Slider(id='window_size', min=1, max=100, step=2, value=10,
                            marks={i: {'label': str(i), 'style': {'color': 'white'}} for i in range(1, 100, 5)})
             ], style={}),
@@ -59,10 +71,17 @@ app.layout = html.Div([
         dbc.Col([
             html.Div([
                     dcc.Graph(id='cycles', style={'margin-top': '10px', 'margin-left': '20px', 'margin-left': '20px'}),
-                    html.P('set cycle length:', style={'text-indent': '18px', 'font-style': 'italic'}),
-                    dcc.Slider(id='mod', min=1, max=20, step=0.1, value=11,
-                               marks={i: {'label': str(i), 'style': {'color': 'white'}}
-                                      for i in range(1, 20, 1)}),
+                    dbc.Row([
+                        html.P('set cycle length (years):', style={'text-indent': '18px', 'font-style': 'italic',
+                                                           'float': 'left'}),
+                        dcc.Input(id='cycle_input', value=11, type='number', min=1, max=50,
+                                  style={'float': 'left', 'margin': '15px', 'width': '30px'})
+                    ], style={'width': '600px', 'height': '60px'}),
+                    dbc.Row([
+                        dcc.Slider(id='cycle_slider', min=1, max=50, step=0.1, value=11,
+                                   marks={i: {'label': str(i), 'style': {'color': 'white'}}
+                                          for i in range(1, 50, 5)})
+                    ]),
                 ], style={'width': '48vw', 'height': '50vh', 'float': 'left'}),
             html.Div([
                 dbc.Row([
@@ -102,6 +121,29 @@ app.layout = html.Div([
 
 
 @app.callback(
+    Output('yr_range', 'value'),
+    Input('yr_min', 'value'),
+    Input('yr_max', 'value')
+)
+def get_year_input(low, high):
+    if low is None or high is None or low not in range(1749, high) or high not in range(low, 2023):
+        return [1900, 2023]
+
+    return [low, high]
+
+
+@app.callback(
+    Output('window_size', 'value'),
+    Input('window_input', 'value')
+)
+def get_window_input(val):
+    if val is not None:
+        return val
+
+    return 10
+
+
+@app.callback(
     Output('sunspot', 'figure'),
     Input('window_size', 'value'),
     Input('yr_range', 'value')
@@ -130,8 +172,19 @@ def smooth_plot(window, yr_range):
 
 
 @app.callback(
+    Output('cycle_slider', 'value'),
+    Input('cycle_input', 'value')
+)
+def get_cycle_input(val):
+    if val is not None:
+        return val
+
+    return 11
+
+
+@app.callback(
     Output('cycles', 'figure'),
-    Input('mod', 'value')
+    Input('cycle_slider', 'value')
 )
 def cycle(mod):
     cycles = get_cycle(sunspots, 'date', mod)
@@ -200,4 +253,5 @@ def update_lasco(clicks):
     return src, txt
 
 
-app.run_server(debug=True)
+if __name__ == "__main__":
+    app.run_server(debug=True)
