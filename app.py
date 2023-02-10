@@ -5,9 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-path = "/sunspots/data/monthly_sunspots.csv"
-
-sunspots = pd.read_csv(path, sep=';', header=None)[[0, 2, 3]]
+sunspots = pd.read_csv("monthly_sunspots.csv", sep=';', header=None)[[0, 2, 3]]
 sunspots.columns = ['year', 'date', 'sunspot_avg']
 
 
