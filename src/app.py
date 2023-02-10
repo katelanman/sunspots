@@ -5,7 +5,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-sunspots = pd.read_csv("monthly_sunspots.csv", sep=';', header=None)[[0, 2, 3]]
+FILEPATH = "/Users/katelanman/Desktop/DS3500/sunspots/data/monthly_sunspots.csv"
+
+sunspots = pd.read_csv(FILEPATH, sep=';', header=None)[[0, 2, 3]]
 sunspots.columns = ['year', 'date', 'sunspot_avg']
 
 
@@ -31,6 +33,7 @@ def get_cycle(df, date_col, mod, new_col='cycle_pos'):
 
 
 app = Dash(__name__)
+server = app.server
 
 app.layout = html.Div([
     dbc.Row([
